@@ -5,14 +5,15 @@
         "core": "*",
         "pxt-atp3012": "github:hokarimasahiro/pxt-atp3012#f61ccb8a99e4765b73f4d0b9ff27e498b68239c7",
         "pxt-watchfont": "github:hokarimasahiro/pxt-watchfont#e63422c1d35e316def6eab1653d7e23dcbeac896",
-        "bluetooth": "*",
         "pxt-split": "github:hokarimasahiro/pxt-split#ccd44dbc0e5504526df8932c50b00b519160e4cc",
-        "pxt-rtc": "github:hokarimasahiro/pxt-rtc#0754c62ce60c1ef489c27233dc602282b9a75192"
+        "pxt-rtc": "github:hokarimasahiro/pxt-rtc#0754c62ce60c1ef489c27233dc602282b9a75192",
+        "bluetooth": "*"
     },
     "files": [
         "main.blocks",
         "main.ts",
-        "README.md"
+        "README.md",
+        "main.py"
     ],
     "testFiles": [
         "test.ts"
