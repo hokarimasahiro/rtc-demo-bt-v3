@@ -1,0 +1,24 @@
+{
+    "name": "RTC-DEMO-BT-V3",
+    "description": "",
+    "dependencies": {
+        "core": "*",
+        "pxt-atp3012": "github:hokarimasahiro/pxt-atp3012#f61ccb8a99e4765b73f4d0b9ff27e498b68239c7",
+        "rtc": "github:hokarimasahiro/rtc#5931498e4551f85ca42a30437525d6fff093cd20",
+        "pxt-watchfont": "github:hokarimasahiro/pxt-watchfont#e63422c1d35e316def6eab1653d7e23dcbeac896",
+        "bluetooth": "*",
+        "pxt-split": "github:hokarimasahiro/pxt-split#ccd44dbc0e5504526df8932c50b00b519160e4cc"
+    },
+    "files": [
+        "main.blocks",
+        "main.ts",
+        "README.md"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "blocksprj"
+}
