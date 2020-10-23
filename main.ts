@@ -2,7 +2,7 @@ function 時間更新 () {
 	
 }
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
-    時計有効 = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
+    受信文字 = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
 })
 function コマンド処理 () {
     if (コマンド == "s") {
@@ -59,14 +59,13 @@ function 時刻表示 (読み上げ: boolean) {
 let datetime = 0
 let 受信文字 = ""
 let datetimeA: number[] = []
-let 時計有効 = ""
 let コマンド = ""
 pins.digitalWritePin(DigitalPin.P0, 0)
 pins.digitalWritePin(DigitalPin.P1, 0)
 pins.digitalWritePin(DigitalPin.P2, 0)
 let 消灯時間 = 600
 コマンド = ""
-時計有効 = rtc.getDevice() != rtc.getClockDevice(rtcType.NON)
+let 時計有効 = rtc.getDevice() != rtc.getClockDevice(rtcType.NON)
 if (!(時計有効)) {
     basic.showIcon(IconNames.Sad)
     basic.pause(500)
