@@ -6,10 +6,16 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () 
 })
 function コマンド処理 () {
     if (コマンド == "s") {
-        datetime = split.splitNum(受信文字.substr(2, 100))
-        rtc.setClockArray(datetime)
-        開始時刻 = (datetime[rtc.getClockData(clockData.hour)] * 60 + datetime[rtc.getClockData(clockData.minute)]) * 60 + datetime[rtc.getClockData(clockData.second)]
-        システム開始 = input.runningTime()
+        datetimeA = split.splitNum(受信文字.substr(2, 100))
+        datetime = rtc.convDateTime(
+        datetimeA[rtc.getClockData(clockData.year)],
+        datetimeA[rtc.getClockData(clockData.month)],
+        datetimeA[rtc.getClockData(clockData.day)],
+        datetimeA[rtc.getClockData(clockData.hour)],
+        datetimeA[rtc.getClockData(clockData.minute)],
+        datetimeA[rtc.getClockData(clockData.second)]
+        )
+        rtc.setDatetime(datetime)
         時刻表示(false)
     } else if (コマンド == "a") {
         pins.analogPitch(parseFloat(受信文字.split(",")[1]), parseFloat(受信文字.split(",")[2]))
@@ -34,27 +40,25 @@ function 表示方向 () {
 }
 function 秒表示 () {
     表示方向()
-    watchfont.showNumber2(datetime[rtc.getClockData(clockData.second)])
+    watchfont.showNumber2(rtc.getData(datetime, clockData.second))
 }
 function 時刻表示 (読み上げ: boolean) {
     if (読み上げ) {
-        atp3012.write("tada'ima <NUMK VAL=" + datetime[rtc.getClockData(clockData.hour)] + " COUNTER=ji>" + " <NUMK VAL=" + datetime[rtc.getClockData(clockData.minute)] + " COUNTER=funn>desu.")
+        atp3012.write("tada'ima <NUMK VAL=" + rtc.getData(datetime, clockData.hour) + " COUNTER=ji>" + " <NUMK VAL=" + rtc.getData(datetime, clockData.minute) + " COUNTER=funn>desu.")
     }
     表示方向()
-    watchfont.showNumber2(datetime[rtc.getClockData(clockData.hour)])
+    watchfont.showNumber2(rtc.getData(datetime, clockData.hour))
     basic.pause(1000)
     basic.clearScreen()
     basic.pause(200)
-    watchfont.showNumber2(datetime[rtc.getClockData(clockData.minute)])
+    watchfont.showNumber2(rtc.getData(datetime, clockData.minute))
     basic.pause(1000)
     basic.clearScreen()
     basic.pause(500)
 }
-let RTC時間 = 0
-let 開始時刻 = 0
+let datetime = 0
 let 受信文字 = ""
-let datetime: number[] = []
-let システム開始 = 0
+let datetimeA: number[] = []
 let コマンド = ""
 pins.digitalWritePin(DigitalPin.P0, 0)
 pins.digitalWritePin(DigitalPin.P1, 0)
@@ -63,7 +67,6 @@ let 消灯時間 = 600
 コマンド = ""
 let 時計有効 = rtc.getDevice() != rtc.getClockDevice(rtcType.NON)
 if (!(時計有効)) {
-    システム開始 = input.runningTime()
     basic.showIcon(IconNames.Sad)
     basic.pause(500)
 }
@@ -73,7 +76,7 @@ if (音声有効) {
     basic.pause(200)
 }
 bluetooth.startUartService()
-datetime = rtc.getClock()
+datetimeA = rtc.getClock()
 時刻表示(false)
 basic.forever(function () {
     basic.pause(100)
@@ -81,15 +84,8 @@ basic.forever(function () {
         コマンド = 受信文字.split(",")[0]
         コマンド処理()
     }
-    if (時計有効) {
-        datetime = rtc.getClock()
-    } else {
-        RTC時間 = 開始時刻 + (input.runningTime() - システム開始) / 1000
-        datetime[rtc.getClockData(clockData.second)] = RTC時間 % 60
-        datetime[rtc.getClockData(clockData.minute)] = Math.trunc(RTC時間 / 60) % 60
-        datetime[rtc.getClockData(clockData.hour)] = Math.trunc(RTC時間 / 3600) % 24
-    }
-    if (datetime[rtc.getClockData(clockData.minute)] == 0 && datetime[rtc.getClockData(clockData.second)] == 0) {
+    datetime = rtc.getDatetime()
+    if (rtc.getData(datetime, clockData.minute) == 0 && rtc.getData(datetime, clockData.second) == 0) {
         pins.digitalWritePin(DigitalPin.P1, 1)
         basic.pause(200)
         pins.digitalWritePin(DigitalPin.P1, 0)
