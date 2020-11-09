@@ -1,28 +1,37 @@
-function 時間更新 () {
-	
-}
-bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
-    受信文字 = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
+serial.onDataReceived(serial.delimiters(Delimiters.NewLine), function () {
+    受信文字 = serial.readUntil(serial.delimiters(Delimiters.NewLine))
 })
 function コマンド処理 () {
     if (コマンド == "s") {
-        datetimeA = split.splitNum(受信文字.substr(2, 100))
-        datetime = rtc.convDateTime(
-        datetimeA[rtc.getClockData(clockData.year)],
-        datetimeA[rtc.getClockData(clockData.month)],
-        datetimeA[rtc.getClockData(clockData.day)],
-        datetimeA[rtc.getClockData(clockData.hour)],
-        datetimeA[rtc.getClockData(clockData.minute)],
-        datetimeA[rtc.getClockData(clockData.second)]
+        datetimeA = 受信文字.substr(2, 100).split(",")
+        rtc.setClock(
+        parseFloat(datetimeA[rtc.getClockData(clockData.year)]),
+        parseFloat(datetimeA[rtc.getClockData(clockData.month)]),
+        parseFloat(datetimeA[rtc.getClockData(clockData.day)]),
+        parseFloat(datetimeA[rtc.getClockData(clockData.weekday)]),
+        parseFloat(datetimeA[rtc.getClockData(clockData.hour)]),
+        parseFloat(datetimeA[rtc.getClockData(clockData.minute)]),
+        parseFloat(datetimeA[rtc.getClockData(clockData.second)])
         )
+        datetime = rtc.getDatetime()
+        時刻表示(false)
+    } else if (コマンド == "u") {
+        datetime = parseFloat(受信文字.split(",")[1])
         rtc.setDatetime(datetime)
         時刻表示(false)
     } else if (コマンド == "a") {
         pins.analogPitch(parseFloat(受信文字.split(",")[1]), parseFloat(受信文字.split(",")[2]))
     } else if (コマンド == "v") {
-        pins.digitalWritePin(DigitalPin.P1, 1)
+        pins.digitalWritePin(DigitalPin.P0, 1)
         basic.pause(parseFloat(受信文字.split(",")[1]))
-        pins.digitalWritePin(DigitalPin.P1, 0)
+        pins.digitalWritePin(DigitalPin.P0, 0)
+    } else if (コマンド == "n") {
+        if (受信文字.split(",")[1] == "0") {
+            strip.showColor(parseFloat(受信文字.split(",")[2]))
+        } else {
+            strip.setPixelColor(parseFloat(受信文字.split(",")[1]) - 1, parseFloat(受信文字.split(",")[2]))
+        }
+        strip.show()
     }
     受信文字 = ""
 }
@@ -56,13 +65,14 @@ function 時刻表示 (読み上げ: boolean) {
     basic.clearScreen()
     basic.pause(500)
 }
-let datetime = 0
+let datetimeA: string[] = []
 let 受信文字 = ""
-let datetimeA: number[] = []
+let datetime = 0
 let コマンド = ""
-pins.digitalWritePin(DigitalPin.P0, 0)
-pins.digitalWritePin(DigitalPin.P1, 0)
-pins.digitalWritePin(DigitalPin.P2, 0)
+let strip: neopixel.Strip = null
+strip = neopixel.create(DigitalPin.P0, 4)
+strip.setBrightness(50)
+strip.clear()
 let 消灯時間 = 600
 コマンド = ""
 let 時計有効 = rtc.getDevice() != rtc.getClockDevice(rtcType.NON)
@@ -70,13 +80,13 @@ if (!(時計有効)) {
     basic.showIcon(IconNames.Sad)
     basic.pause(500)
 }
-let 音声有効 = rtc.testReadI2c(46) == 0
+let 音声有効 = atp3012.isAvalable()
 if (音声有効) {
     watchfont.plot(0, 0)
     basic.pause(200)
 }
-bluetooth.startUartService()
-datetimeA = rtc.getClock()
+serial.redirectToUSB()
+datetime = rtc.getDatetime()
 時刻表示(false)
 basic.forever(function () {
     basic.pause(100)
@@ -86,9 +96,9 @@ basic.forever(function () {
     }
     datetime = rtc.getDatetime()
     if (rtc.getData(datetime, clockData.minute) == 0 && rtc.getData(datetime, clockData.second) == 0) {
-        pins.digitalWritePin(DigitalPin.P1, 1)
+        pins.digitalWritePin(DigitalPin.P0, 1)
         basic.pause(200)
-        pins.digitalWritePin(DigitalPin.P1, 0)
+        pins.digitalWritePin(DigitalPin.P0, 0)
         basic.pause(800)
     }
     if (input.buttonIsPressed(Button.A) && !(input.buttonIsPressed(Button.B))) {
