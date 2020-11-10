@@ -99,7 +99,6 @@ if (音声有効) {
 時刻表示(false)
 serial.redirectToUSB()
 serial.setBaudRate(BaudRate.BaudRate115200)
-serial.writeLine("hellow")
 basic.forever(function () {
     basic.pause(100)
     if (受信文字 != "") {
