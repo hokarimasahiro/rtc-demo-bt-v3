@@ -97,11 +97,9 @@ if (音声有効) {
     basic.pause(200)
 }
 時刻表示(false)
-serial.redirect(
-SerialPin.USB_TX,
-SerialPin.USB_RX,
-BaudRate.BaudRate115200
-)
+serial.redirectToUSB()
+serial.setBaudRate(BaudRate.BaudRate115200)
+serial.writeLine("hellow")
 basic.forever(function () {
     basic.pause(100)
     if (受信文字 != "") {
