@@ -22,9 +22,9 @@ function コマンド処理 () {
     } else if (コマンド == "a") {
         pins.analogPitch(parseFloat(受信文字.split(",")[1]), parseFloat(受信文字.split(",")[2]))
     } else if (コマンド == "v") {
-        pins.digitalWritePin(DigitalPin.P0, 1)
+        pins.digitalWritePin(DigitalPin.P1, 1)
         basic.pause(parseFloat(受信文字.split(",")[1]))
-        pins.digitalWritePin(DigitalPin.P0, 0)
+        pins.digitalWritePin(DigitalPin.P1, 0)
     } else if (コマンド == "n") {
         if (受信文字.split(",")[1] == "0") {
             strip.showColor(parseFloat(受信文字.split(",")[2]))
@@ -52,6 +52,7 @@ function 秒表示 () {
     watchfont.showNumber2(rtc.getData(datetime, clockData.second))
 }
 function 時刻表示 (読み上げ: boolean) {
+    serial.writeNumbers([rtc.getData(datetime, clockData.year), rtc.getData(datetime, clockData.month), rtc.getData(datetime, clockData.day), rtc.getData(datetime, clockData.weekday), rtc.getData(datetime, clockData.hour), rtc.getData(datetime, clockData.minute), rtc.getData(datetime, clockData.second)])
     if (読み上げ) {
         atp3012.write("tada'ima <NUMK VAL=" + rtc.getData(datetime, clockData.hour) + " COUNTER=ji>" + " <NUMK VAL=" + rtc.getData(datetime, clockData.minute) + " COUNTER=funn>desu.")
     }
@@ -78,27 +79,42 @@ let 消灯時間 = 600
 let 時計有効 = rtc.getDevice() != rtc.getClockDevice(rtcType.NON)
 if (!(時計有効)) {
     basic.showIcon(IconNames.Sad)
+    datetime = rtc.convDateTime(
+    2009,
+    2,
+    13,
+    23,
+    31,
+    30
+    )
     basic.pause(500)
+} else {
+    datetime = rtc.getDatetime()
 }
 let 音声有効 = atp3012.isAvalable()
 if (音声有効) {
     watchfont.plot(0, 0)
     basic.pause(200)
 }
-serial.redirectToUSB()
-datetime = rtc.getDatetime()
 時刻表示(false)
+serial.redirect(
+SerialPin.USB_TX,
+SerialPin.USB_RX,
+BaudRate.BaudRate115200
+)
 basic.forever(function () {
     basic.pause(100)
     if (受信文字 != "") {
         コマンド = 受信文字.split(",")[0]
         コマンド処理()
     }
-    datetime = rtc.getDatetime()
+    if (時計有効) {
+        datetime = rtc.getDatetime()
+    }
     if (rtc.getData(datetime, clockData.minute) == 0 && rtc.getData(datetime, clockData.second) == 0) {
-        pins.digitalWritePin(DigitalPin.P0, 1)
+        pins.digitalWritePin(DigitalPin.P1, 1)
         basic.pause(200)
-        pins.digitalWritePin(DigitalPin.P0, 0)
+        pins.digitalWritePin(DigitalPin.P1, 0)
         basic.pause(800)
     }
     if (input.buttonIsPressed(Button.A) && !(input.buttonIsPressed(Button.B))) {
