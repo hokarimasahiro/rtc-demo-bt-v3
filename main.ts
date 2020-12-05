@@ -22,9 +22,9 @@ function コマンド処理 () {
     } else if (コマンド == "a") {
         pins.analogPitch(parseFloat(受信文字.split(",")[1]), parseFloat(受信文字.split(",")[2]))
     } else if (コマンド == "v") {
-        pins.digitalWritePin(DigitalPin.P1, 1)
+        pins.digitalWritePin(DigitalPin.P0, 1)
         basic.pause(parseFloat(受信文字.split(",")[1]))
-        pins.digitalWritePin(DigitalPin.P1, 0)
+        pins.digitalWritePin(DigitalPin.P0, 0)
     } else if (コマンド == "n") {
         if (受信文字.split(",")[1] == "0") {
             strip.showColor(parseFloat(受信文字.split(",")[2]))
@@ -76,6 +76,7 @@ strip.setBrightness(50)
 strip.clear()
 let 消灯時間 = 600
 コマンド = ""
+rtc.setDevice(rtcType.ds3231)
 let 時計有効 = rtc.getDevice() != rtc.getClockDevice(rtcType.NON)
 if (!(時計有効)) {
     basic.showIcon(IconNames.Sad)
@@ -92,10 +93,6 @@ if (!(時計有効)) {
     datetime = rtc.getDatetime()
 }
 let 音声有効 = atp3012.isAvalable()
-if (音声有効) {
-    watchfont.plot(0, 0)
-    basic.pause(200)
-}
 時刻表示(false)
 serial.redirectToUSB()
 serial.setBaudRate(BaudRate.BaudRate115200)
@@ -109,9 +106,9 @@ basic.forever(function () {
         datetime = rtc.getDatetime()
     }
     if (rtc.getData(datetime, clockData.minute) == 0 && rtc.getData(datetime, clockData.second) == 0) {
-        pins.digitalWritePin(DigitalPin.P1, 1)
+        pins.digitalWritePin(DigitalPin.P0, 1)
         basic.pause(200)
-        pins.digitalWritePin(DigitalPin.P1, 0)
+        pins.digitalWritePin(DigitalPin.P0, 0)
         basic.pause(800)
     }
     if (input.buttonIsPressed(Button.A) && !(input.buttonIsPressed(Button.B))) {

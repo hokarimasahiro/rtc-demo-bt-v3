@@ -3,9 +3,9 @@
     "description": "",
     "dependencies": {
         "core": "*",
-        "pxt-atp3012": "github:hokarimasahiro/pxt-atp3012#1560ce652f841660f1bfd850e0638c85039d9e81",
+        "pxt-atp3012": "github:hokarimasahiro/pxt-atp3012#9e412a5e233ab06c045c7a0d7d7fea6ddd5f2758",
         "pxt-watchfont": "github:hokarimasahiro/pxt-watchfont#572ae2ddd7f597dc65081544432e18b706bec4c4",
-        "pxt-rtc": "github:hokarimasahiro/pxt-rtc#4f6fb9696ae4edf1def11878c3413795c0aaac92",
+        "pxt-rtc": "github:hokarimasahiro/pxt-rtc#89bafe8bc52bd0646e0ee8adb257e542b87450b1",
         "pxt-neopixel": "github:hokarimasahiro/pxt-neopixel#218cbba299c0e7238e93906c15b955840691ab7e",
         "pxt-testi2c": "github:hokarimasahiro/pxt-testi2c#026b35e4c81b77167e7d124396d2bdf239f3e47e"
     },
